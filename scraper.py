@@ -23,10 +23,11 @@ from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-DEFAULT_URL = "https://www.evoolipxnyxzq.shop/"
+DEFAULT_URL = "https://1ppa99-evooli-com.cdn.ampproject.org/c/s/1ppa99.evooli.com/amp/"
 DEFAULT_USER_AGENT = "CekcekxVideoBot/2.0 (+https://github.com/inadinatv/Cekcekx)"
 VIDEO_EXTENSIONS = (".mp4", ".webm", ".m3u8", ".mov", ".m4v", ".ogv", ".ts")
 URL_RE = re.compile(r"https?://[^\s\"'<>\\]+", re.IGNORECASE)
+RELATIVE_MEDIA_RE = re.compile(r"(?:^|[\"'\s:=])((?:/|\./)[^\"'<>\s]+(?:\.mp4|\.webm|\.m3u8)(?:\?[^\"'<>\s]*)?)", re.IGNORECASE)
 
 
 @dataclass(frozen=True)
@@ -120,8 +121,12 @@ def extract_videos(source: str, page_url: str, max_videos: int = 500) -> list[Vi
 
     # Many sites put the stream URL in JSON-LD or a JavaScript player config.
     scripts = "\n".join(script.get_text(" ", strip=False) for script in soup.find_all("script"))
+    # JSON often escapes slashes as https:\/\/...; normalize before scanning.
+    scripts = scripts.replace("\\/", "/")
     for raw in URL_RE.findall(scripts):
         add(raw, "Video")
+    for match in RELATIVE_MEDIA_RE.findall(scripts):
+        add(match, "Video")
 
     return found
 

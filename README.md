@@ -1,6 +1,6 @@
 # Cekcekx video botu
 
-Bot, verilen HTML sayfasındaki gerçek video bağlantılarını (`video`, `source`, `iframe`, bağlantılar ve gömülü JSON/JS) bulur; `index.html` ve `playlist.m3u` olarak kaydeder.
+Bot, varsayılan olarak verilen Evooli AMP sayfasındaki gerçek video bağlantılarını (`video`, `source`, `iframe`, bağlantılar ve gömülü JSON/JS) bulur; özellikle MP4 bağlantılarını `index.html` ve `playlist.m3u` olarak kaydeder.
 
 ## Yerelde çalıştırma
 
