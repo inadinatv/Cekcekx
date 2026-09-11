@@ -1,0 +1,3 @@
+- name: Kutuphaneleri Yukle
+        run: |
+          pip install requests beautifulsoup4 urllib3 cloudscraper
