@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Video arşivi</title>
+<style>
+:root { color-scheme:dark; } * { box-sizing:border-box; } body { margin:0; padding:16px; font-family:system-ui,sans-serif; background:#0b1220; color:#e5e7eb; }
+main { max-width:900px; margin:auto; } h1 { color:#38bdf8; } .muted { color:#94a3b8; font-size:.85rem; } video { width:100%; max-height:65vh; background:#000; border-radius:12px; }
+#now { padding:10px 0; font-weight:700; } .list { display:grid; gap:8px; } button { border:0; border-radius:8px; padding:12px; text-align:left; color:#fff; background:#1e293b; cursor:pointer; } button:hover,button:focus { background:#0369a1; }
+.empty { padding:18px; background:#1e293b; border-radius:8px; }
+</style></head>
+<body><main><h1>Video arşivi</h1><p class="muted">Kaynak: https://1ppa99-evooli-com.cdn.ampproject.org/c/s/1ppa99.evooli.com/amp/<br>0 video bulundu</p>
+<video id="player" controls playsinline preload="metadata"></video><div id="now">Bir video seçin</div><section class="list" id="list"></section></main>
+<script>
+const videos = [];
+const player = document.querySelector('#player'), now = document.querySelector('#now'), list = document.querySelector('#list');
+function selectVideo(video) { player.src = video.url; player.poster = video.poster || ''; now.textContent = video.title; player.play().catch(() => {}); window.scrollTo({top:0,behavior:'smooth'}); }
+if (!videos.length) list.innerHTML = '<div class="empty">Video bulunamadı. Kaynak sayfa veya filtreleri kontrol edin.</div>';
+videos.forEach((video) => { const button = document.createElement('button'); button.type='button'; button.textContent=video.title; button.addEventListener('click', () => selectVideo(video)); list.appendChild(button); });
+if (videos.length) selectVideo(videos[0]);
+</script></body></html>
