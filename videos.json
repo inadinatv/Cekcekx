@@ -1,0 +1,53 @@
+{
+  "generated_at": "2026-09-12T08:30:25+00:00",
+  "count": 3,
+  "videos": [
+    {
+      "title": "Nosferatu - symfonia grozy (Niemcy, 1922) - reż. F. W. Murnau",
+      "url": "https://archive.org/download/Nosferatu1922_201611/Nosferatu%20%281922%29.mp4",
+      "poster": "https://archive.org/download/Nosferatu1922_201611/Nosferatu1922_201611.thumbs/Nosferatu%20%281922%29_000001.jpg",
+      "page": "https://archive.org/details/Nosferatu1922_201611",
+      "description": "F. W. Murnau'un 1922 yapımı sessiz korku klasiği; telif hakkı süresi dolmuş (kamu malı) bir kopya.\nYönetmen/Sanatçı: F. W. Murnau",
+      "duration": "1:31:28",
+      "year": "1922",
+      "license": "Kamu malı",
+      "source": "archive.org",
+      "tags": [
+        "german expressionism",
+        "silent film"
+      ]
+    },
+    {
+      "title": "Cleopatra",
+      "url": "https://archive.org/download/Cleopatra_1912/Cleopatra.mp4",
+      "poster": "https://archive.org/download/Cleopatra_1912/Cleopatra_1912.thumbs/Cleopatra_000054.jpg",
+      "page": "https://archive.org/details/Cleopatra_1912",
+      "description": "Cleopatra is a silent film created in 1912 by Helen Gardner and the Helen Gardner Picture Players. The film, in which Gardner stars in the title role, was based on a play written by Victorien Sardou. In a series of elaborately staged tableaux, it depicts Cleopatra (Gardner) and her love affairs, first with handsome fisherman-slave Pharon, then with Marc Antony. The film features lavish sets and costumes and at just over an hour, it was considered fairly lengthy.\nYönetmen/Sanatçı: Helen Gardner",
+      "duration": "1:27:11",
+      "year": "1912",
+      "license": "Kamu malı",
+      "source": "archive.org",
+      "tags": [
+        "Cleopatra",
+        "Silent film",
+        "Ancient Egypt"
+      ]
+    },
+    {
+      "title": "A Christmas Carol (1910)",
+      "url": "https://archive.org/download/ACHristmasCarol1910/A-Christmas-Carol--1910.mp4",
+      "poster": "https://archive.org/download/ACHristmasCarol1910/ACHristmasCarol1910.thumbs/A-Christmas-Carol--1910_000027.jpg",
+      "page": "https://archive.org/details/ACHristmasCarol1910",
+      "description": "Charles Dickens'ın hikâyesinden uyarlanan, Edison Manufacturing yapımı ilk sinema uyarlamalarından biri (1910).\nYönetmen/Sanatçı: J. Searle Dawley",
+      "duration": "10:25",
+      "year": "1910",
+      "license": "Kamu malı",
+      "source": "archive.org",
+      "tags": [
+        "silent film",
+        "christmas",
+        "Charles Dickens"
+      ]
+    }
+  ]
+}

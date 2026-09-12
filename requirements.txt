@@ -1,3 +1,6 @@
+# Çekirdek bağımlılıklar opsiyoneldir: ikisi de kurulu değilse scraper.py
+# stdlib (urllib + regex) ile çalışmaya devam eder. Yine de önerilir:
+# bs4 daha doğru HTML ayrıştırması, requests ise retry/connection havuzu sağlar.
 beautifulsoup4>=4.12,<5
 requests>=2.31,<3
 urllib3>=2.0,<3

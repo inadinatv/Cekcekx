@@ -1,0 +1,7 @@
+#EXTM3U version="1"
+#EXTINF:-1 tvg-id="" group-title="archive.org" tvg-logo="https://archive.org/download/Nosferatu1922_201611/Nosferatu1922_201611.thumbs/Nosferatu%20%281922%29_000001.jpg" tvg-duration="1:31:28",Nosferatu - symfonia grozy (Niemcy, 1922) - reż. F. W. Murnau
+https://archive.org/download/Nosferatu1922_201611/Nosferatu%20%281922%29.mp4
+#EXTINF:-1 tvg-id="" group-title="archive.org" tvg-logo="https://archive.org/download/Cleopatra_1912/Cleopatra_1912.thumbs/Cleopatra_000054.jpg" tvg-duration="1:27:11",Cleopatra
+https://archive.org/download/Cleopatra_1912/Cleopatra.mp4
+#EXTINF:-1 tvg-id="" group-title="archive.org" tvg-logo="https://archive.org/download/ACHristmasCarol1910/ACHristmasCarol1910.thumbs/A-Christmas-Carol--1910_000027.jpg" tvg-duration="10:25",A Christmas Carol (1910)
+https://archive.org/download/ACHristmasCarol1910/A-Christmas-Carol--1910.mp4

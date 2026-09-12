@@ -1,0 +1,86 @@
+name: Video Botu Calistir
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # her 6 saatte bir
+  workflow_dispatch:
+    inputs:
+      max_videos:
+        description: "Cekilecek maksimum video sayisi"
+        required: false
+        default: "60"
+        type: choice
+        options: ["20", "40", "60", "100", "150"]
+      only_licensed:
+        description: "Yalnizca lisans alani dolu archive.org ogelerini yayinla"
+        required: false
+        default: "true"
+        type: choice
+        options: ["true", "false"]
+
+concurrency:
+  group: video-bot
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      # Repo variables (Settings > Secrets and variables > Actions):
+      #   SOURCE     = ia | html        (varsayilan: ia)
+      #   TARGET_URL = kendi sitenizin baslangic adresi (SOURCE=html icin zorunlu)
+      #   IA_QUERY   = archive.org arama sorgusu
+      SOURCE: ${{ vars.SOURCE || 'ia' }}
+      TARGET_URL: ${{ vars.TARGET_URL }}
+      IA_QUERY: ${{ vars.IA_QUERY }}
+
+    steps:
+      - name: Repoyu klonla
+        uses: actions/checkout@v4
+
+      - name: Python kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Paketleri yukle
+        run: python -m pip install --upgrade pip && pip install -r requirements.txt
+
+      - name: Birim testleri calistir
+        run: |
+          pip install pytest
+          python -m pytest -q
+
+      - name: Video botunu calistir
+        env:
+          MAX_VIDEOS: ${{ github.event.inputs.max_videos || '60' }}
+          ONLY_LICENSED: ${{ github.event.inputs.only_licensed == 'false' && '' || '--only-licensed' }}
+        run: |
+          set -euo pipefail
+          python scraper.py \
+            --max-videos "${MAX_VIDEOS}" \
+            --output index.html \
+            --json videos.json \
+            --playlist playlist.m3u \
+            ${ONLY_LICENSED} 2>&1 | tee bot.log
+          echo "### Video botu ozeti" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          tail -n 25 bot.log >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Degisiklikleri kaydet ve pushla
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html videos.json playlist.m3u
+          if git diff --cached --quiet; then
+            echo "Degisiklik yok, push atlandi."
+            exit 0
+          fi
+          git commit -m "Otomatik video katalogu guncellendi"
+          git push

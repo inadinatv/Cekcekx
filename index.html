@@ -1,21 +1,85 @@
 <!doctype html>
 <html lang="tr">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
 <title>Video arşivi</title>
 <style>
-:root { color-scheme:dark; } * { box-sizing:border-box; } body { margin:0; padding:16px; font-family:system-ui,sans-serif; background:#0b1220; color:#e5e7eb; }
-main { max-width:900px; margin:auto; } h1 { color:#38bdf8; } .muted { color:#94a3b8; font-size:.85rem; } video { width:100%; max-height:65vh; background:#000; border-radius:12px; }
-#now { padding:10px 0; font-weight:700; } .list { display:grid; gap:8px; } button { border:0; border-radius:8px; padding:12px; text-align:left; color:#fff; background:#1e293b; cursor:pointer; } button:hover,button:focus { background:#0369a1; }
-.empty { padding:18px; background:#1e293b; border-radius:8px; }
+:root{--bg:#0b1220;--panel:#151f33;--line:#233246;--fg:#e5e7eb;--muted:#94a3b8;--accent:#38bdf8}
+*{box-sizing:border-box}
+body{margin:0;padding:20px;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--fg)}
+header{max-width:1240px;margin:0 auto 18px}
+h1{margin:0 0 6px;font-size:1.5rem;color:var(--accent)}
+.muted{color:var(--muted);font-size:.86rem;line-height:1.5;margin:0}
+.toolbar{max-width:1240px;margin:0 auto 16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.toolbar input{flex:1 1 220px;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--fg);font-size:.92rem}
+.toolbar span.count{color:var(--muted);font-size:.85rem}
+#player-wrap{max-width:1240px;margin:0 auto 18px;display:none;background:#000;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+#player-wrap.on{display:block}
+video{display:block;width:100%;max-height:62vh;background:#000}
+#now{padding:10px 14px;display:flex;gap:12px;justify-content:space-between;align-items:center;font-weight:600;background:var(--panel)}
+#now a{color:var(--accent);font-size:.82rem;text-decoration:none;font-weight:500}
+.grid{max-width:1240px;margin:0 auto;display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;text-align:left;color:inherit;font:inherit;padding:0;transition:transform .12s,border-color .12s}
+.card:hover,.card:focus-visible{transform:translateY(-2px);border-color:var(--accent);outline:none}
+.thumb{position:relative;aspect-ratio:16/9;background:#0a0f1b center/cover no-repeat}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.badge{position:absolute;right:8px;bottom:8px;background:rgba(2,6,12,.82);color:#fff;font-size:.72rem;padding:2px 7px;border-radius:6px}
+.body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px}
+.card h2{margin:0;font-size:.92rem;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.desc{margin:0;color:var(--muted);font-size:.78rem;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:auto}
+.chip{font-size:.68rem;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 7px}
+.chip.lic{color:#a7f3d0;border-color:#065f46}
+.empty{grid-column:1/-1;padding:22px;background:var(--panel);border:1px solid var(--line);border-radius:12px;color:var(--muted)}
+footer{max-width:1240px;margin:26px auto 0;color:var(--muted);font-size:.78rem;line-height:1.6}
+footer a{color:var(--accent)}
 </style></head>
-<body><main><h1>Video arşivi</h1><p class="muted">Kaynak: https://1ppa99-evooli-com.cdn.ampproject.org/c/s/1ppa99.evooli.com/amp/<br>0 video bulundu</p>
-<video id="player" controls playsinline preload="metadata"></video><div id="now">Bir video seçin</div><section class="list" id="list"></section></main>
+<body>
+<header>
+  <h1>Video arşivi</h1>
+  <p class="muted">Kaynak: sample-videos.json (önbellek) · 3 video · Üretim: 2026-09-12 08:30 UTC</p>
+</header>
+<div class="toolbar">
+  <input id="q" type="search" placeholder="Başlık, açıklama veya etikette ara…" aria-label="Ara">
+  <span class="count" id="shown"></span>
+</div>
+<div id="player-wrap">
+  <video id="player" controls playsinline preload="metadata"></video>
+  <div id="now"><span id="now-title"></span><a id="now-link" target="_blank" rel="noopener noreferrer">Kaynak sayfa ↗</a></div>
+</div>
+<main class="grid" id="grid"></main>
+<noscript><p class="muted" style="max-width:1240px;margin:0 auto">JavaScript kapalı: aşağıdaki bağlantılarla oynatın.</p>
+<div class="grid" id="noscript"></div></noscript>
+<footer id="foot"></footer>
 <script>
-const videos = [];
-const player = document.querySelector('#player'), now = document.querySelector('#now'), list = document.querySelector('#list');
-function selectVideo(video) { player.src = video.url; player.poster = video.poster || ''; now.textContent = video.title; player.play().catch(() => {}); window.scrollTo({top:0,behavior:'smooth'}); }
-if (!videos.length) list.innerHTML = '<div class="empty">Video bulunamadı. Kaynak sayfa veya filtreleri kontrol edin.</div>';
-videos.forEach((video) => { const button = document.createElement('button'); button.type='button'; button.textContent=video.title; button.addEventListener('click', () => selectVideo(video)); list.appendChild(button); });
-if (videos.length) selectVideo(videos[0]);
-</script></body></html>
+const videos = [{"title":"Nosferatu - symfonia grozy (Niemcy, 1922) - reż. F. W. Murnau","url":"https://archive.org/download/Nosferatu1922_201611/Nosferatu%20%281922%29.mp4","poster":"https://archive.org/download/Nosferatu1922_201611/Nosferatu1922_201611.thumbs/Nosferatu%20%281922%29_000001.jpg","page":"https://archive.org/details/Nosferatu1922_201611","description":"F. W. Murnau'un 1922 yapımı sessiz korku klasiği; telif hakkı süresi dolmuş (kamu malı) bir kopya.\nYönetmen/Sanatçı: F. W. Murnau","duration":"1:31:28","year":"1922","license":"Kamu malı","source":"archive.org","tags":["german expressionism","silent film"]},{"title":"Cleopatra","url":"https://archive.org/download/Cleopatra_1912/Cleopatra.mp4","poster":"https://archive.org/download/Cleopatra_1912/Cleopatra_1912.thumbs/Cleopatra_000054.jpg","page":"https://archive.org/details/Cleopatra_1912","description":"Cleopatra is a silent film created in 1912 by Helen Gardner and the Helen Gardner Picture Players. The film, in which Gardner stars in the title role, was based on a play written by Victorien Sardou. In a series of elaborately staged tableaux, it depicts Cleopatra (Gardner) and her love affairs, first with handsome fisherman-slave Pharon, then with Marc Antony. The film features lavish sets and costumes and at just over an hour, it was considered fairly lengthy.\nYönetmen/Sanatçı: Helen Gardner","duration":"1:27:11","year":"1912","license":"Kamu malı","source":"archive.org","tags":["Cleopatra","Silent film","Ancient Egypt"]},{"title":"A Christmas Carol (1910)","url":"https://archive.org/download/ACHristmasCarol1910/A-Christmas-Carol--1910.mp4","poster":"https://archive.org/download/ACHristmasCarol1910/ACHristmasCarol1910.thumbs/A-Christmas-Carol--1910_000027.jpg","page":"https://archive.org/details/ACHristmasCarol1910","description":"Charles Dickens'ın hikâyesinden uyarlanan, Edison Manufacturing yapımı ilk sinema uyarlamalarından biri (1910).\nYönetmen/Sanatçı: J. Searle Dawley","duration":"10:25","year":"1910","license":"Kamu malı","source":"archive.org","tags":["silent film","christmas","Charles Dickens"]}];
+const grid=document.getElementById('grid'),player=document.getElementById('player'),
+wrap=document.getElementById('player-wrap'),nowTitle=document.getElementById('now-title'),
+nowLink=document.getElementById('now-link'),q=document.getElementById('q'),shown=document.getElementById('shown'),
+foot=document.getElementById('foot'),noscript=document.getElementById('noscript');
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function play(v){wrap.classList.add('on');player.src=v.url;if(v.poster)player.poster=v.poster;
+ nowTitle.textContent=v.title;nowLink.href=v.page||v.url;nowLink.style.display=v.page?'':'none';
+ player.play().catch(()=>{});wrap.scrollIntoView({behavior:'smooth',block:'start'});}
+function matches(v,needle){if(!needle)return true;const hay=[v.title,v.description,(v.tags||[]).join(' '),v.source,v.year].join(' ').toLowerCase();return hay.includes(needle);}
+function render(needle){const list=videos.filter(v=>matches(v,needle));
+ grid.innerHTML=list.map((v,i)=>`<button class="card" type="button" data-i="${videos.indexOf(v)}">
+  <div class="thumb">${v.poster?`<img loading="lazy" src="${esc(v.poster)}" alt="${esc(v.title)} kapak görseli">`:''}
+   ${v.duration?`<span class="badge">${esc(v.duration)}</span>`:''}</div>
+  <div class="body"><h2>${esc(v.title)}</h2>${v.description?`<p class="desc">${esc(v.description)}</p>`:''}
+   <div class="chips">${v.year?`<span class="chip">${esc(v.year)}</span>`:''}${v.source?`<span class="chip">${esc(v.source)}</span>`:''}${v.license?`<span class="chip lic">${esc(v.license)}</span>`:''}${(v.tags||[]).slice(0,2).map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div>
+  </div></button>`).join('') || '<div class="empty">Eşleşen video yok. Filtreyi değiştirin.</div>';
+ shown.textContent=list.length+' / '+videos.length+' gösteriliyor';}
+q.addEventListener('input',()=>render(q.value.trim().toLowerCase()));
+grid.addEventListener('click',e=>{const card=e.target.closest('.card');if(card)play(videos[+card.dataset.i]);});
+if(!videos.length){grid.innerHTML='<div class="empty">Hiç video bulunamadı. Kaynak veya sorgu parametrelerini kontrol edin.</div>';}
+if(noscript&&videos.length){noscript.innerHTML=videos.slice(0,60).map(v=>`<a class="card" href="${esc(v.url)}"><div class="body"><h2>${esc(v.title)}</h2></div></a>`).join('');}
+if(foot)foot.innerHTML='Bu katalog <a href="https://archive.org" rel="noopener">archive.org</a> gibi açık/kamuya açık lisanslı kaynaklardan otomatik üretilir. '
+ +'Videolar kaynak sunucuda kalır; yalnızca doğrudan bağlantıları ve kapak görselleri listelenir. '
+ +'Kendi sitenizi tararken <code>robots.txt</code> ve telif haklarına uymak sorumluluğunuzdadır.';
+render('');
+</script>
+</body>
+</html>
